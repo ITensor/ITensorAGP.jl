@@ -3,6 +3,14 @@ normalized_inner(x, y) = inner(x, y) / (norm(x) * norm(y))
 # TODO: Move to ITensors.jl
 using ITensors: AbstractMPS
 
+Base.vcat(ψ₁::MPST, ψ₂::MPST) where {MPST<:AbstractMPS} = MPST([ITensors.data(ψ₁); ITensors.data(ψ₂)])
+Base.vcat(a::ITensor, ψ::AbstractMPS) = [typeof(ψ)([a]); ψ]
+Base.vcat(a::Vector{ITensor}, ψ::AbstractMPS) = [typeof(ψ)(a); ψ]
+Base.vcat(ψ::AbstractMPS, a::ITensor) = [ψ; typeof(ψ)([a])]
+Base.vcat(ψ::AbstractMPS, a::Vector{ITensor}) = [ψ; typeof(ψ)(a)]
+Base.reverse(ψ::AbstractMPS) = typeof(ψ)(reverse(ITensors.data(ψ)))
+Base.pop!(ψ::AbstractMPS) = pop!(ITensors.data(ψ))
+
 #
 # Take an MPS/MPO of length `n`:
 #
@@ -47,8 +55,8 @@ function interleave(ψ₁::AbstractMPS, ψ₂::AbstractMPS)
     @assert length(ψ₁) == length(ψ₂)
     n = length(ψ₁)
     @assert typeof(ψ₁) == typeof(ψ₂)
-    ψ̃₁ = [insert_identity_links(ψ₁)[1:2n-1]; ITensor(1.0)]
-    ψ̃₂ = [ITensor(1.0); insert_identity_links(ψ₂)[1:2n-1]]
+    ψ̃₁ = [insert_identity_links(ψ₁); ITensor(1.0)]
+    ψ̃₂ = [ITensor(1.0); insert_identity_links(ψ₂)]
     ψ̃ = typeof(ψ₁)(2n)
     for j = 1:2n
         ψ̃[j] = ψ̃₁[j] * ψ̃₂[j]
