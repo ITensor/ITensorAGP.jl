@@ -26,7 +26,7 @@ function dham(s)
   return MPO(os, s)
 end
 
-function main(; L, hz)
+function main(; L, hz, outputlevel=1)
   s = siteinds("S=1/2", L)
 
   H = ham(s; hz)
@@ -43,7 +43,7 @@ function main(; L, hz)
     cutoff=1e-6,
     nsweeps=10,
     maxdim=40,
-    outputlevel=1,
+    outputlevel,
   )
 
   return (; AGP, ls_error, H, dH)

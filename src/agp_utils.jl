@@ -7,7 +7,6 @@ Calculate the normalized error |Ax - b| defined as
 
     |Ax - b| = √((⟨x|A† - ⟨b|)(A|x⟩ - |b⟩))
              = √(⟨x|A†A|x⟩ + ⟨b|b⟩ - 2 * real(⟨b|A|x⟩))
-
 """
 function linsolve_error(A::MPO, b::MPS, x::MPS)
   return √(

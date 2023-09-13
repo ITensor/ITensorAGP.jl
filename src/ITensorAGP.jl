@@ -13,7 +13,7 @@ include("mps_utils.jl")
 Construct the adiabatic gauge potential (AGP) as a matrix 
 product operator (MPO) by constructing linear equation
 
-    (H^2 \otimes I + I \otimes H^2 - 2 H \otimes H)|x> = |b>
+    (H^2 \"otimes I + I \"otimes H^2 - 2 H \"otimes H)|x> = |b>
 
 where |x> and |b> = i|∂H H - H ∂H> are matrix product states (MPSs) 
 in a doubly large Hilbert space compared to that of H. The AGP as an MPO 
@@ -23,7 +23,7 @@ and converting |X> back into an MPO X.
 For H with time reversal symmetry, the AGP and linear equation can be
 represented with only real numbers, where solving for X_real in
 
-    (H^2 \otimes I + I \otimes H^2 - 2 H \otimes H)|x_real> = |b_real>
+    (H^2 \"otimes I + I \"otimes H^2 - 2 H \"otimes H)|x_real> = |b_real>
 
 gives X_real = iX (|b_real> = i|b> = -|∂H H - H ∂ H>).
 
@@ -44,7 +44,7 @@ Optional keyword arguments:
 function agp(
   H::MPO, ∂H::MPO, X₀::MPO; use_real=false, init_cutoff=1e-14, solver_kwargs=(;), kwargs...
 )
-  #   outputlevel = get(kwargs, :outputlevel, 0)
+  outputlevel = get(kwargs, :outputlevel, 0)
   #   cutoff = get(kwargs, :cutoff, 1e-8)
   #   nsweeps = get(kwargs, :nsweeps, 10)
   #   maxdim = get(kwargs, :maxdim, 40)
@@ -114,9 +114,9 @@ function agp(
   # solve linear equation Ax = b
   if outputlevel > 0
     @show linsolve_error(A, b, X₀)
-    X = @time linsolve(A, b, X₀; solver_kwargs_kwargs, kwargs...)
+    X = @time linsolve(A, b, X₀; solver_kwargs, kwargs...)
   else
-    X = linsolve(A, b, X₀; solver_kwargs_kwargs, kwargs...)
+    X = linsolve(A, b, X₀; solver_kwargs, kwargs...)
   end
 
   ls_error = linsolve_error(A, b, X)

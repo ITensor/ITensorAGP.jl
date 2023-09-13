@@ -43,7 +43,7 @@ end
 
 @testset "ITensorAGP.jl" begin
   include(joinpath(pkgdir(ITensorAGP), "examples", "transverse_field_ising.jl"))
-  res = main(; L=8, hz=0.5)
+  res = main(; L=8, hz=0.5, outputlevel=0)
   AGP = res.AGP
   ls_error = res.ls_error
 
