@@ -42,25 +42,20 @@ Optional keyword arguments:
        `KrylovKit.linsolve` which is a GMRES linear solver
 """
 function agp(
-  H::MPO, ∂H::MPO, X₀::MPO; use_real=false, init_cutoff=1e-14, solver_kwargs=(;), kwargs...
+  H::MPO,
+  ∂H::MPO,
+  X₀::MPO;
+  use_real=false,
+  init_cutoff=1e-14,
+  solver_kwargs=(;),
+  outputlevel=0,
+  kwargs...,
 )
-  outputlevel = get(kwargs, :outputlevel, 0)
-  #   cutoff = get(kwargs, :cutoff, 1e-8)
-  #   nsweeps = get(kwargs, :nsweeps, 10)
-  #   maxdim = get(kwargs, :maxdim, 40)
+  # solver kwargs
+  default_solver_kwargs = (; ishermitian=true, rtol=1e-4, maxiter=1, krylovdim=3)
 
-  #   # solver kwargs
-  #   linsolve_ishermitian = get(solver_kwargs, :ishermitian, true)
-  #   linsolve_rtol = get(solver_kwargs, :rtol, 1e-4)
-  #   linsolve_maxiter = get(solver_kwargs, :maxiter, 1)
-  #   linsolve_krylovdim = get(solver_kwargs, :krylovdim, 3)
-
-  #   linsolve_kwargs = (;
-  #     ishermitian=linsolve_ishermitian,
-  #     rtol=linsolve_rtol,
-  #     maxiter=linsolve_maxiter,
-  #     krylovdim=linsolve_krylovdim,
-  #   )
+  # user input `solver_kwargs` will override `default_solver_kwargs` if duplicates exist
+  solver_kwargs = (; default_solver_kwargs..., solver_kwargs...)
 
   # length of MPO
   L = length(H)

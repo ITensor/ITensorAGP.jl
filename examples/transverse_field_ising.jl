@@ -32,18 +32,8 @@ function main(; L, hz, outputlevel=1)
   H = ham(s; hz)
   dH = dham(s)
 
-  solver_kwargs = (; ishermitian=true, rtol=1e-4, maxiter=1, krylovdim=3)
-
   AGP, ls_error = agp(
-    H,
-    dH;
-    l=1,
-    use_real=false,
-    solver_kwargs,
-    cutoff=1e-6,
-    nsweeps=10,
-    maxdim=40,
-    outputlevel,
+    H, dH; l=1, use_real=false, outputlevel, cutoff=1e-6, nsweeps=10, maxdim=40
   )
 
   return (; AGP, ls_error, H, dH)
