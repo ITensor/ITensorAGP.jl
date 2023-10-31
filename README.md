@@ -17,8 +17,6 @@ For example, to compute the AGP of the Hamiltonian `H::MPO` with perturbation `d
 ```julia
 using ITensorAGP
 
-solver_kwargs = (; ishermitian=true, rtol=1e-4, maxiter=1, krylovdim=3)
-
-AGP, ls_error = agp(H, dH; l=1, use_real=false, solver_kwargs, cutoff=1e-6, nsweeps=10, maxdim=40)
+AGP, ls_error = agp(H, dH; cutoff=1e-6, nsweeps=10, maxdim=40)
 ```
 Given the MPOs `H` and `dH`, this code constructs the AGP as an MPO using the `linsolve` function in [ITensorTDVP.jl](https://github.com/ITensor/ITensorTDVP.jl), which calls the `linsolve` function in [KrylovKit.jl](https://github.com/Jutho/KrylovKit.jl.git).
