@@ -6,7 +6,7 @@ This is a package that constructs the adiabatic gauge potential (AGP) as a matri
 
 This package is currently not registered. You can install it with:
 ```julia
-julia> using Pkg
+julia> using Pkg: Pkg
 
 julia> Pkg.add(url="https://github.com/ITensor/ITensorAGP.jl.git")
 ```
@@ -15,7 +15,7 @@ julia> Pkg.add(url="https://github.com/ITensor/ITensorAGP.jl.git")
 
 For example, to compute the AGP of the Hamiltonian `H::MPO` with perturbation `dH::MPO`, you can use the `agp` function:
 ```julia
-using ITensorAGP
+using ITensorAGP: agp
 
 AGP, ls_error = agp(H, dH; cutoff=1e-6, nsweeps=10, maxdim=40)
 ```

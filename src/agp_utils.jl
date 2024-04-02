@@ -1,4 +1,4 @@
-using ITensors
+using ITensors: inner, scalartype
 
 """
     linsolve_error(A::MPO, b::MPS, x::MPS)
@@ -9,9 +9,10 @@ Calculate the normalized error |Ax - b| defined as
              = √(⟨x|A†A|x⟩ + ⟨b|b⟩ - 2 * real(⟨b|A|x⟩))
 """
 function linsolve_error(A::MPO, b::MPS, x::MPS)
-  return √(
-    real((inner(A, x, A, x) + inner(b, b) - 2 * real(inner(b', A, x)))) / real(inner(b, b))
-  )
+  AxAx = inner(A, x, A, x)
+  bb = inner(b, b)
+  bAx = inner(b', A, x)
+  return √(abs(real((AxAx + bb - 2 * real(bAx))) / real(bb)))
 end
 
 """
@@ -42,7 +43,7 @@ function find_ansatz(
   cutoff = init_cutoff
 
   adH = Array{MPO}(undef, 2l)
-  M = zeros(Float64, (l, l))
+  M = zeros(scalartype(H), (l, l))
   adH[1] = -(apply(H, ∂H; cutoff), apply(∂H, H; cutoff); cutoff)
   for k in 2:(2l)
     Hc = adH[k - 1]
@@ -60,12 +61,6 @@ function find_ansatz(
   for k in 2:l
     X₀ = +(X0, α[k] * adH[2 * k - 1]; cutoff)
   end
-
-  if !use_real
-    X₀ *= im
-  else
-    X₀ *= -1.0
-  end
-
+  X₀ = use_real ? -X₀ : im * X₀
   return X₀
 end
