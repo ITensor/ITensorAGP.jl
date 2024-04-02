@@ -1,0 +1,3 @@
+[deps]
+ITensorAGP = "50ba78bc-899b-4cea-8ce4-e2d64a1bd294"
+ITensors = "9136182c-28ba-11e9-034c-db9fb085ebd5"

@@ -1,17 +1,41 @@
+function interleave(x::AbstractVector, y::AbstractVector)
+  @assert length(x) == length(y)
+  n = length(x)
+  z = Vector{promote_type(eltype(x), eltype(y))}(undef, 2n)
+  for j in 1:n
+    z[2j - 1] = x[j]
+    z[2j] = y[j]
+  end
+  return z
+end
+interleave(x::AbstractVector) = x
+
 normalized_inner(x, y) = inner(x, y) / (norm(x) * norm(y))
 
-# TODO: Move to ITensors.jl
-using ITensors: AbstractMPS
+using ITensors:
+  ITensors,
+  Index,
+  ITensor,
+  combiner,
+  commoninds,
+  dag,
+  filterinds,
+  hascommoninds,
+  onehot,
+  plev,
+  scalartype,
+  sim
+using LinearAlgebra: factorize, norm
+using ITensors.ITensorMPS: AbstractMPS, MPO, MPS, linkinds, siteinds
 
-function Base.vcat(ψ₁::MPST, ψ₂::MPST) where {MPST<:AbstractMPS}
+# TODO: Move to ITensors.jl
+function mps_vcat(ψ₁::MPST, ψ₂::MPST) where {MPST<:AbstractMPS}
   return MPST([ITensors.data(ψ₁); ITensors.data(ψ₂)])
 end
-Base.vcat(a::ITensor, ψ::AbstractMPS) = [typeof(ψ)([a]); ψ]
-Base.vcat(a::Vector{ITensor}, ψ::AbstractMPS) = [typeof(ψ)(a); ψ]
-Base.vcat(ψ::AbstractMPS, a::ITensor) = [ψ; typeof(ψ)([a])]
-Base.vcat(ψ::AbstractMPS, a::Vector{ITensor}) = [ψ; typeof(ψ)(a)]
-Base.reverse(ψ::AbstractMPS) = typeof(ψ)(reverse(ITensors.data(ψ)))
-Base.pop!(ψ::AbstractMPS) = pop!(ITensors.data(ψ))
+mps_vcat(a::ITensor, ψ::AbstractMPS) = mps_vcat(typeof(ψ)([a]), ψ)
+mps_vcat(a::Vector{ITensor}, ψ::AbstractMPS) = mps_vcat(typeof(ψ)(a), ψ)
+mps_vcat(ψ::AbstractMPS, a::ITensor) = mps_vcat(ψ, typeof(ψ)([a]))
+mps_vcat(ψ::AbstractMPS, a::Vector{ITensor}) = mps_vcat(ψ, typeof(ψ)(a))
 
 #
 # Take an MPS/MPO of length `n`:
@@ -33,7 +57,7 @@ function insert_identity_links(ψ::AbstractMPS)
   end
   l = linkinds(ψ)
   l̃ = sim(l)
-  δ⃗ = [δ(dag(l[j]), l̃[j]) for j in 1:(n - 1)]
+  δ⃗ = [δ(scalartype(ψ), dag(l[j]), l̃[j]) for j in 1:(n - 1)]
   for j in 1:(n - 1)
     ψ̃[2j] = δ⃗[j]
     ψ̃[2j + 1] *= dag(δ⃗[j])
@@ -57,8 +81,8 @@ function interleave(ψ₁::AbstractMPS, ψ₂::AbstractMPS)
   @assert length(ψ₁) == length(ψ₂)
   n = length(ψ₁)
   @assert typeof(ψ₁) == typeof(ψ₂)
-  ψ̃₁ = [insert_identity_links(ψ₁); ITensor(1.0)]
-  ψ̃₂ = [ITensor(1.0); insert_identity_links(ψ₂)]
+  ψ̃₁ = mps_vcat(insert_identity_links(ψ₁), ITensor(one(Bool)))
+  ψ̃₂ = mps_vcat(ITensor(one(Bool)), insert_identity_links(ψ₂))
   ψ̃ = typeof(ψ₁)(2n)
   for j in 1:(2n)
     ψ̃[j] = ψ̃₁[j] * ψ̃₂[j]
@@ -69,18 +93,6 @@ function interleave(ψ₁::AbstractMPS, ψ₂::AbstractMPS, ψ₃::AbstractMPS, 
   return error("Not implemented")
 end
 interleave(ψ::AbstractMPS) = ψ
-
-function interleave(x::Vector{T}, y::Vector{T}) where {T}
-  @assert length(x) == length(y)
-  n = length(x)
-  z = Vector{T}(undef, 2n)
-  for j in 1:n
-    z[2j - 1] = x[j]
-    z[2j] = y[j]
-  end
-  return z
-end
-interleave(x::Vector) = x
 
 function siteinds_per_dimension(::Val{ndims}, ψ::MPS) where {ndims}
   s = siteinds(ψ)
@@ -93,8 +105,8 @@ function insert_missing_links(ψ::AbstractMPS)
   for j in 1:(n - 1)
     if !hascommoninds(ψ[j], ψ[j + 1])
       lⱼ = Index(1, "j=$(j)↔$(j + 1)")
-      ψ[j] *= onehot(lⱼ => 1)
-      ψ[j + 1] *= onehot(dag(lⱼ) => 1)
+      ψ[j] *= onehot(scalartype(ψ), lⱼ => 1)
+      ψ[j + 1] *= onehot(scalartype(ψ), dag(lⱼ) => 1)
     end
   end
   return ψ

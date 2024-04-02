@@ -1,4 +1,4 @@
-using ITensors
+using ITensors: inner, scalartype
 
 """
     linsolve_error(A::MPO, b::MPS, x::MPS)
@@ -42,7 +42,7 @@ function find_ansatz(
   cutoff = init_cutoff
 
   adH = Array{MPO}(undef, 2l)
-  M = zeros(Float64, (l, l))
+  M = zeros(scalartype(H), (l, l))
   adH[1] = -(apply(H, ∂H; cutoff), apply(∂H, H; cutoff); cutoff)
   for k in 2:(2l)
     Hc = adH[k - 1]
@@ -60,12 +60,6 @@ function find_ansatz(
   for k in 2:l
     X₀ = +(X0, α[k] * adH[2 * k - 1]; cutoff)
   end
-
-  if !use_real
-    X₀ *= im
-  else
-    X₀ *= -1.0
-  end
-
+  X₀ = use_real ? -X₀ : im * X₀
   return X₀
 end

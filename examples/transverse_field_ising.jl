@@ -1,36 +1,36 @@
-using ITensors
-using ITensorAGP
+using ITensors.ITensorMPS: MPO, OpSum, siteinds
+using ITensorAGP: agp
 
-function ham(s; hz)
+function ham(s; hz, eltype=Float64)
   L = length(s)
 
   os = OpSum()
   for j in 1:(L - 1)
-    os += 1.0, "X", j, "X", j + 1
+    os += 1, "X", j, "X", j + 1
   end
   for j in 1:L
     os += hz, "Z", j
   end
 
-  return MPO(os, s)
+  return MPO(eltype, os, s)
 end
 
-function dham(s)
+function dham(s; eltype=Float64)
   L = length(s)
 
   os = OpSum()
   for j in 1:L
-    os += 1.0, "Z", j
+    os += 1, "Z", j
   end
 
-  return MPO(os, s)
+  return MPO(eltype, os, s)
 end
 
-function main(; L, hz, outputlevel=1)
+function main(; L, hz, eltype=Float64, outputlevel=1)
   s = siteinds("S=1/2", L)
 
-  H = ham(s; hz)
-  dH = dham(s)
+  H = ham(s; hz, eltype)
+  dH = dham(s; eltype)
 
   AGP, ls_error = agp(
     H, dH; l=1, use_real=false, outputlevel, cutoff=1e-6, nsweeps=10, maxdim=40
