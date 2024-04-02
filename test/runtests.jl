@@ -60,10 +60,11 @@ const elts = (Float32, Float64, Complex{Float32}, Complex{Float64})
   H = res.H
   dH = res.dH
 
-  ITensors.disable_warn_order()
-  H_matrix = matricize(H)
-  dH_matrix = matricize(dH)
-  AGP_matrix = matricize(AGP)
+  ITensors.@disable_warn_order begin
+    H_matrix = matricize(H)
+    dH_matrix = matricize(dH)
+    AGP_matrix = matricize(AGP)
+  end
 
   E, V = eigen(H_matrix)
   exactAGP = compute_agp(E, V, dH_matrix)
