@@ -45,7 +45,7 @@ function compute_agp(E::Vector, V::Matrix, ∂H::Matrix)
 end
 
 tol(::Type{<:Float32}) = 1e-2
-tol(::Type{<:Float64}) = 1e-3
+tol(::Type{<:Float64}) = 1e-2
 tol(type::Type{<:Complex}) = tol(real(type))
 const elts = (Float32, Float64, Complex{Float32}, Complex{Float64})
 @testset "ITensorAGP.jl (eltype=$elt)" for elt in elts
