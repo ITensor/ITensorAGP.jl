@@ -9,9 +9,10 @@ Calculate the normalized error |Ax - b| defined as
              = √(⟨x|A†A|x⟩ + ⟨b|b⟩ - 2 * real(⟨b|A|x⟩))
 """
 function linsolve_error(A::MPO, b::MPS, x::MPS)
-  return √(
-    real((inner(A, x, A, x) + inner(b, b) - 2 * real(inner(b', A, x)))) / real(inner(b, b))
-  )
+  AxAx = inner(A, x, A, x)
+  bb = inner(b, b)
+  bAx = inner(b', A, x)
+  return √(abs(real((AxAx + bb - 2 * real(bAx))) / real(bb)))
 end
 
 """
