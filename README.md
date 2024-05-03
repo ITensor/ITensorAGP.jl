@@ -1,6 +1,6 @@
 # ITensorAGP
 
-This is a package that constructs the adiabatic gauge potential (AGP) as a matrix product operator (MPO), which can be used to adiabatically evolve matrix product states (MPSs). The package is built using the [ITensors.jl](https://github.com/ITensor/ITensors.jl) and [ITensorTDVP.jl](https://github.com/ITensor/ITensorTDVP.jl) libraries.
+This is a package that constructs the adiabatic gauge potential (AGP) as a matrix product operator (MPO), which can be used to adiabatically evolve matrix product states (MPSs), using an algorithm introduced in [arXiv:2311.00748](https://arxiv.org/abs/2311.00748). The package is built using the [ITensors.jl](https://github.com/ITensor/ITensors.jl) and [ITensorTDVP.jl](https://github.com/ITensor/ITensorTDVP.jl) libraries.
 
 ## Installation
 
