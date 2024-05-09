@@ -26,7 +26,7 @@ using ITensors:
   scalartype,
   sim
 using LinearAlgebra: factorize, norm
-using ITensors.ITensorMPS: AbstractMPS, MPO, MPS, linkinds, siteinds
+using ITensorMPS: AbstractMPS, MPO, MPS, linkinds, siteinds
 
 # TODO: Move to ITensors.jl
 function mps_vcat(ψ₁::MPST, ψ₂::MPST) where {MPST<:AbstractMPS}

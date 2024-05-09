@@ -1,7 +1,7 @@
 @eval module $(gensym())
 using ITensorAGP: ITensorAGP
 using ITensors: ITensors, combiner, scalartype
-using ITensors.ITensorMPS: MPO
+using ITensorMPS: MPO
 using ITensors.NDTensors: matrix
 using LinearAlgebra: diagind, eigen, tr
 using Test: @test, @testset
@@ -51,7 +51,7 @@ const elts = (Float32, Float64, Complex{Float32}, Complex{Float64})
 @testset "ITensorAGP.jl (eltype=$elt)" for elt in elts
   include(joinpath(pkgdir(ITensorAGP), "examples", "transverse_field_ising.jl"))
   res = main(; L=8, hz=0.5, eltype=elt, outputlevel=0)
-  AGP = res.AGP
+  AGP = res.agp
   ls_error = res.ls_error
 
   @test scalartype(AGP) === complex(elt)

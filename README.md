@@ -1,6 +1,6 @@
 # ITensorAGP
 
-This is a package that constructs the adiabatic gauge potential (AGP) as a matrix product operator (MPO), which can be used to adiabatically evolve matrix product states (MPSs), using an algorithm introduced in [arXiv:2311.00748](https://arxiv.org/abs/2311.00748). The package is built using the [ITensors.jl](https://github.com/ITensor/ITensors.jl) and [ITensorTDVP.jl](https://github.com/ITensor/ITensorTDVP.jl) libraries.
+This is a package that constructs the adiabatic gauge potential (AGP) as a matrix product operator (MPO), which can be used to adiabatically evolve matrix product states (MPSs), using an algorithm introduced in [arXiv:2311.00748](https://arxiv.org/abs/2311.00748). The package is built using the [ITensors.jl](https://github.com/ITensor/ITensors.jl) and [ITensorMPS.jl](https://github.com/ITensor/ITensorMPS.jl) libraries.
 
 ## Installation
 
@@ -19,4 +19,4 @@ using ITensorAGP: agp
 
 AGP, ls_error = agp(H, dH; cutoff=1e-6, nsweeps=10, maxdim=40)
 ```
-Given the MPOs `H` and `dH`, this code constructs the AGP as an MPO using the `linsolve` function in [ITensorTDVP.jl](https://github.com/ITensor/ITensorTDVP.jl), which calls the `linsolve` function in [KrylovKit.jl](https://github.com/Jutho/KrylovKit.jl.git).
+Given the MPOs `H` and `dH`, this code constructs the AGP as an MPO using the `linsolve` function in [ITensorMPS.jl](https://github.com/ITensor/ITensorMPS.jl), which calls the `linsolve` function in [KrylovKit.jl](https://github.com/Jutho/KrylovKit.jl.git).
