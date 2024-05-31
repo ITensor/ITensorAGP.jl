@@ -2,8 +2,8 @@ using ITensors: δ, addtags, apply, replaceinds, scalartype
 using ITensorMPS: MPO, MPS, linsolve, siteinds
 
 """
-    agp(H::MPO, ∂H::MPO, X₀::MPO; use_real = false, init_cutoff = 1e-14, solver_kwargs = (;), kwargs...)
-    agp(H::MPO, ∂H::MPO; l = 1, use_real = false, init_cutoff = 1e-14, solver_kwargs = (;), kwargs...)
+    agp(H::MPO, ∂H::MPO, X₀::MPO; use_real = false, init_cutoff = 1e-14, updater_kwargs = (;), kwargs...)
+    agp(H::MPO, ∂H::MPO; l = 1, use_real = false, init_cutoff = 1e-14, updater_kwargs = (;), kwargs...)
 
 Construct the adiabatic gauge potential (AGP) as a matrix 
 product operator (MPO) by constructing linear equation
@@ -32,7 +32,7 @@ Optional keyword arguments:
     - `use_real` - boolean specifying whether to use only 
        real numbers/operators (when `H` has time reversal symmetry)
     - `init_cutoff` - float specifying the truncation error cutoff
-    - `solver_kwargs` - a `NamedTuple` containing keyword arguments 
+    - `updater_kwargs` - a `NamedTuple` containing keyword arguments 
        that will get forwarded to the local solver, in this case 
        `KrylovKit.linsolve` which is a GMRES linear solver
 """
@@ -42,15 +42,15 @@ function agp(
   X₀::MPO;
   use_real=false,
   init_cutoff=1e-14,
-  solver_kwargs=(;),
+  updater_kwargs=(;),
   outputlevel=0,
   kwargs...,
 )
   # solver kwargs
-  default_solver_kwargs = (; ishermitian=true, rtol=1e-4, maxiter=1, krylovdim=3)
+  default_updater_kwargs = (; ishermitian=true, rtol=1e-4, maxiter=1, krylovdim=3)
 
-  # user input `solver_kwargs` will override `default_solver_kwargs` if duplicates exist
-  solver_kwargs = (; default_solver_kwargs..., solver_kwargs...)
+  # user input `updater_kwargs` will override `default_updater_kwargs` if duplicates exist
+  updater_kwargs = (; default_updater_kwargs..., updater_kwargs...)
 
   # length of MPO
   L = length(H)
@@ -94,7 +94,7 @@ function agp(
   # solve linear equation Ax = b
   outputlevel > 0 && @show linsolve_error(A, b, X₀)
   linsolve_time = @elapsed begin
-    X = linsolve(A, b, X₀; solver_kwargs, kwargs...)
+    X = linsolve(A, b, X₀; updater_kwargs, kwargs...)
   end
   outputlevel > 0 && @show linsolve_time
 
@@ -109,8 +109,8 @@ function agp(
 end
 
 function agp(
-  H::MPO, ∂H::MPO; l=1, use_real=false, init_cutoff=1e-14, solver_kwargs=(;), kwargs...
+  H::MPO, ∂H::MPO; l=1, use_real=false, init_cutoff=1e-14, updater_kwargs=(;), kwargs...
 )
   X₀ = find_ansatz(H, ∂H, l; use_real, init_cutoff, kwargs...)
-  return agp(H, ∂H, X₀; use_real, init_cutoff, solver_kwargs, kwargs...)
+  return agp(H, ∂H, X₀; use_real, init_cutoff, updater_kwargs, kwargs...)
 end
